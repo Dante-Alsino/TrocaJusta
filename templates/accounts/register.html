@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - Troca Justa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="auth-body">
+    <div class="auth-container">
+        <!-- Coluna Esquerda -->
+        <div class="auth-left">
+            <div class="auth-logo">
+                <span class="logo-text">Troca Justa</span>
+            </div>
+            <div class="auth-left-content">
+                <h1 class="auth-title">Crie sua Conta na<br>Comunidade.</h1>
+                <p class="auth-description">Comece a anunciar seus itens e serviços na principal plataforma de escambo de Charqueadas e região.</p>
+            </div>
+            <div class="auth-footer">
+                &copy; 2024 Troca Justa Charqueadas.
+            </div>
+        </div>
+        
+        <!-- Coluna Direita -->
+        <div class="auth-right">
+            <div class="auth-form-wrapper">
+                <h2 class="auth-heading">Cadastre-se</h2>
+                <p class="auth-subheading">Preencha os dados abaixo para começar.</p>
+                
+                <form method="post" action="{% url 'register' %}" class="auth-form">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                        <div class="auth-error" style="color: red; margin-bottom: 1rem; font-size: 0.875rem;">
+                            Por favor, corrija os erros abaixo.
+                        </div>
+                    {% endif %}
+
+                    {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div style="color: red; font-size: 0.75rem; margin-top: 0.25rem;">{{ field.errors.0 }}</div>
+                        {% endif %}
+                        {% if field.help_text %}
+                            <div style="color: var(--color-text-muted); font-size: 0.75rem; margin-top: 0.25rem;">{{ field.help_text }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    
+                    <button type="submit" class="btn-primary btn-block">Criar Conta</button>
+                </form>
+                
+                <div class="auth-bottom">
+                    Já tem uma conta? <a href="{% url 'login' %}">Entrar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
