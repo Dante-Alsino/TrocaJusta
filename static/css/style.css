@@ -1,0 +1,150 @@
+/* ==========================================================================
+   Design System & Base Tokens
+   ========================================================================== */
+:root {
+    /* Colors based on the UI prototypes */
+    --color-primary: #004785; /* Dark blue used in buttons */
+    --color-primary-hover: #003666;
+    --color-background-light: #F4F5F7; /* Left panel background */
+    --color-background-white: #FFFFFF; /* Right panel background */
+    
+    --color-text-dark: #1A1A1A; /* Main headings */
+    --color-text-body: #4A4A4A; /* Descriptive text */
+    --color-text-muted: #6B7280;
+    
+    --color-border: #E5E7EB;
+    
+    /* Typography */
+    --font-family-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    
+    /* Spacing & Borders */
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+}
+
+/* ==========================================================================
+   Reset & Base Styles
+   ========================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family-sans);
+    background-color: var(--color-background-light);
+    color: var(--color-text-body);
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--color-text-dark);
+    font-weight: 600;
+}
+
+a {
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--color-primary-hover);
+}
+
+/* ==========================================================================
+   Components
+   ========================================================================== */
+/* Navbar */
+.navbar {
+    background-color: var(--color-background-white);
+    border-bottom: 1px solid var(--color-border);
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.navbar-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--color-primary);
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    font-weight: 500;
+}
+
+.nav-links a:not(.btn-primary) {
+    color: var(--color-text-body);
+}
+
+.nav-links a:not(.btn-primary):hover {
+    color: var(--color-primary);
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--color-primary);
+    color: white !important;
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--border-radius-md);
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--color-primary-hover);
+}
+
+.btn-text {
+    background: none;
+    border: none;
+    color: var(--color-text-body);
+    font-weight: 500;
+    font-size: 1rem;
+    cursor: pointer;
+}
+.btn-text:hover {
+    color: var(--color-primary);
+}
+
+/* Layout */
+.main-content {
+    flex: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    width: 100%;
+}
+
+/* Footer */
+.footer {
+    background-color: var(--color-background-white);
+    border-top: 1px solid var(--color-border);
+    padding: 1.5rem 0;
+    text-align: center;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+}
