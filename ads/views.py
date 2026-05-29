@@ -14,9 +14,30 @@ def ad_detail(request, pk):
 
 @login_required
 def ad_create(request):
-    # Logica placeholder para criação via formulário html
     if request.method == 'POST':
-        # Aqui virá a lógica do form futuramente
-        pass
+        titulo = request.POST.get('titulo_produto')
+        categoria_id = request.POST.get('categoria')
+        preco = request.POST.get('preco_solicitado')
+        descricao = request.POST.get('descricao_detalhada')
+        imagem = request.FILES.get('imagem')
+        
+        from core.models import ImagemAnuncio
+        
+        # Salva o Anúncio vinculando ao usuário logado
+        anuncio = Anuncio.objects.create(
+            perfil=request.user,
+            categoria_id=categoria_id,
+            titulo_produto=titulo,
+            descricao_detalhada=descricao,
+            preco_solicitado=preco,
+            status_publicacao=Anuncio.StatusAnuncio.ATIVO
+        )
+        
+        # Salva a imagem, se foi enviada
+        if imagem:
+            ImagemAnuncio.objects.create(anuncio=anuncio, imagem=imagem)
+            
+        return redirect('ads:list')
+        
     categorias = Categoria.objects.all()
     return render(request, 'ads/ad_create.html', {'categorias': categorias})
