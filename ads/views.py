@@ -41,3 +41,17 @@ def ad_create(request):
         
     categorias = Categoria.objects.all()
     return render(request, 'ads/ad_create.html', {'categorias': categorias})
+
+@login_required
+def my_ads(request):
+    # Lista os anúncios criados pelo usuário logado
+    anuncios = Anuncio.objects.filter(perfil=request.user).order_by('-data_postagem')
+    return render(request, 'ads/my_ads.html', {'anuncios': anuncios})
+
+@login_required
+def ad_delete(request, pk):
+    # Permite a exclusão de um anúncio apenas pelo dono
+    anuncio = get_object_or_404(Anuncio, pk=pk, perfil=request.user)
+    if request.method == 'POST':
+        anuncio.delete()
+    return redirect('ads:my_ads')
