@@ -140,3 +140,6 @@ AUTH_USER_MODEL = 'core.CustomUser'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# Configurações de Redirecionamento de Autenticação
+LOGIN_REDIRECT_URL = 'ads:list'
+LOGOUT_REDIRECT_URL = 'home'

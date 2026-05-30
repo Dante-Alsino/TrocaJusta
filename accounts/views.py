@@ -10,6 +10,8 @@ class CustomUserCreationForm(UserCreationForm):
         model = User
         fields = ('email', 'username', 'nome_completo', 'telefone_contato')
 
+from django.contrib.auth.decorators import login_required
+
 def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
@@ -20,3 +22,7 @@ def register(request):
     else:
         form = CustomUserCreationForm()
     return render(request, 'accounts/register.html', {'form': form})
+
+@login_required
+def profile_view(request):
+    return render(request, 'accounts/profile.html')
