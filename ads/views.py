@@ -14,6 +14,11 @@ def ad_detail(request, pk):
 
 @login_required
 def ad_create(request):
+    if request.user.status_conta != 'ativo':
+        from django.contrib import messages
+        messages.warning(request, 'Sua conta precisa ser verificada pelo Administrador para que você possa publicar anúncios.')
+        return redirect('ads:my_ads')
+        
     if request.method == 'POST':
         titulo = request.POST.get('titulo_produto')
         categoria_id = request.POST.get('categoria')

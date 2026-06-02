@@ -9,11 +9,30 @@
         <h1 class="hero-title" style="text-align: left; margin-bottom: 0.5rem;">Meus Anúncios</h1>
         <p style="color: var(--color-text-muted);">Gerencie seus anúncios, atualize status ou crie novos barters.</p>
     </div>
-    <a href="{% url 'ads:create' %}" class="btn-primary" style="display: flex; align-items: center; gap: 0.5rem;">
+    <a href="{% url 'ads:create' %}" class="btn-primary" style="display: flex; align-items: center; gap: 0.5rem; {% if user.status_conta != 'ativo' %}opacity: 0.5; pointer-events: none;{% endif %}" {% if user.status_conta != 'ativo' %}title="Apenas contas verificadas podem publicar"{% endif %}>
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> 
         Novo Anúncio
     </a>
 </div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div style="background-color: #FEF3C7; color: #92400E; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid #F59E0B; font-weight: 500;">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+{% if user.status_conta != 'ativo' %}
+<div style="background-color: #FEF2F2; color: #991B1B; padding: 1.25rem; border-radius: 8px; margin-bottom: 2rem; border-left: 4px solid #EF4444; display: flex; gap: 1rem; align-items: flex-start;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+    <div>
+        <strong style="font-size: 1.1rem; display: block; margin-bottom: 0.25rem;">Conta Pendente de Verificação</strong>
+        Para manter a segurança de nossa comunidade, todos os perfis passam por uma validação antes de publicarem anúncios. 
+        Sua conta encontra-se pendente no momento. Por favor, aguarde a liberação do Administrador.
+    </div>
+</div>
+{% endif %}
 
 <div class="tabs">
     <div class="tab-link active">Ativos</div>
