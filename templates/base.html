@@ -86,6 +86,14 @@
 
             <!-- Injeção de Páginas -->
             <div style="padding: 3rem;">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div style="padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-weight: 500; {% if message.tags == 'success' %}background-color: #D1FAE5; color: #065F46; border-left: 4px solid #10B981;{% elif message.tags == 'info' %}background-color: #DBEAFE; color: #1E40AF; border-left: 4px solid #3B82F6;{% elif message.tags == 'error' or message.tags == 'warning' %}background-color: #FEF2F2; color: #991B1B; border-left: 4px solid #EF4444;{% else %}background-color: #FEF3C7; color: #92400E; border-left: 4px solid #F59E0B;{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
                 {% block content %}
                 {% endblock content %}
             </div>

@@ -10,7 +10,11 @@ def ad_list(request):
 def ad_detail(request, pk):
     # Detalha um anúncio específico
     anuncio = get_object_or_404(Anuncio, pk=pk)
-    return render(request, 'ads/ad_detail.html', {'anuncio': anuncio})
+    ja_denunciou = False
+    if request.user.is_authenticated:
+        from core.models import Denuncia
+        ja_denunciou = Denuncia.objects.filter(anuncio=anuncio, perfil_autor=request.user).exists()
+    return render(request, 'ads/ad_detail.html', {'anuncio': anuncio, 'ja_denunciou': ja_denunciou})
 
 @login_required
 def ad_create(request):
@@ -60,3 +64,26 @@ def ad_delete(request, pk):
     if request.method == 'POST':
         anuncio.delete()
     return redirect('ads:my_ads')
+
+@login_required
+def ad_report(request, pk):
+    anuncio = get_object_or_404(Anuncio, pk=pk)
+    if request.method == 'POST':
+        motivo = request.POST.get('motivo_categoria')
+        detalhes = request.POST.get('detalhes_denuncia')
+        
+        from core.models import Denuncia
+        from django.contrib import messages
+        
+        if not Denuncia.objects.filter(anuncio=anuncio, perfil_autor=request.user).exists():
+            Denuncia.objects.create(
+                anuncio=anuncio,
+                perfil_autor=request.user,
+                motivo_categoria=motivo,
+                detalhes_denuncia=detalhes
+            )
+            messages.success(request, 'Sua denúncia foi registrada e será analisada com prioridade pela nossa equipe.')
+        else:
+            messages.info(request, 'Você já denunciou este anúncio anteriormente.')
+            
+    return redirect('ads:detail', pk=pk)
