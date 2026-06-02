@@ -8,7 +8,16 @@ User = get_user_model()
 class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ('email', 'username', 'nome_completo', 'telefone_contato')
+        fields = ('email', 'username', 'nome_completo', 'telefone_contato', 'cidade', 'endereco_completo')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['cidade'].required = True
+        self.fields['endereco_completo'].required = True
+        self.fields['endereco_completo'].label = "Endereço Completo"
+        self.fields['endereco_completo'].widget.attrs.update({
+            'placeholder': 'Ex: Rua das Flores, 123 - Bairro Centro'
+        })
 
 from django.contrib.auth.decorators import login_required
 

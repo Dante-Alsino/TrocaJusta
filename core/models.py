@@ -8,8 +8,23 @@ class CustomUser(AbstractUser):
         SUSPENSO = 'suspenso', 'Suspenso'
         PENDENTE = 'pendente_verificacao', 'Pendente de Verificação'
 
+    class CidadeOpcoes(models.TextChoices):
+        CHARQUEADAS = 'charqueadas', 'Charqueadas'
+        SAO_JERONIMO = 'sao_jeronimo', 'São Jerônimo'
+        TRIUNFO = 'triunfo', 'Triunfo'
+        ARROIO_DOS_RATOS = 'arroio_dos_ratos', 'Arroio dos Ratos'
+        BUTIA = 'butia', 'Butiá'
+        MINAS_DO_LEAO = 'minas_do_leao', 'Minas do Leão'
+
     email = models.EmailField('Endereço de Email', unique=True)
     telefone_contato = models.CharField('Telefone de Contato', max_length=20)
+    cidade = models.CharField(
+        'Cidade',
+        max_length=20,
+        choices=CidadeOpcoes.choices,
+        default=CidadeOpcoes.CHARQUEADAS
+    )
+    endereco_completo = models.CharField('Rua e Bairro (Apenas para Verificação)', max_length=255, blank=True, null=True)
     status_conta = models.CharField(
         'Status da Conta',
         max_length=20,

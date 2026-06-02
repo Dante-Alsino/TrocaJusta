@@ -7,16 +7,16 @@ from .models import CustomUser, Categoria, Anuncio, ImagemAnuncio, Denuncia
 
 @admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
-    list_display = ('email', 'nome_completo', 'telefone_contato', 'status_conta', 'is_staff')
-    list_filter = ('status_conta', 'is_staff', 'is_superuser', 'is_active')
-    search_fields = ('email', 'nome_completo', 'telefone_contato')
+    list_display = ('email', 'nome_completo', 'telefone_contato', 'cidade', 'status_conta', 'is_staff')
+    list_filter = ('status_conta', 'cidade', 'is_staff', 'is_superuser', 'is_active')
+    search_fields = ('email', 'nome_completo', 'telefone_contato', 'endereco_completo')
     ordering = ('email',)
     
     fieldsets = UserAdmin.fieldsets + (
-        ('Informações Adicionais', {'fields': ('nome_completo', 'telefone_contato', 'status_conta')}),
+        ('Informações Adicionais e Localidade', {'fields': ('nome_completo', 'telefone_contato', 'cidade', 'endereco_completo', 'status_conta')}),
     )
     add_fieldsets = UserAdmin.add_fieldsets + (
-        ('Informações Adicionais', {'fields': ('nome_completo', 'telefone_contato', 'status_conta')}),
+        ('Informações Adicionais e Localidade', {'fields': ('nome_completo', 'telefone_contato', 'cidade', 'endereco_completo', 'status_conta')}),
     )
 
 @admin.register(Categoria)

@@ -43,6 +43,12 @@
                     <div class="form-group">
                         <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                         {{ field }}
+                        {% if field.name == 'endereco_completo' %}
+                            <div style="background-color: #FEF2F2; color: #991B1B; padding: 0.75rem; border-radius: 6px; border-left: 3px solid #EF4444; font-size: 0.75rem; margin-top: 0.5rem; display: flex; gap: 0.5rem; align-items: flex-start;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                <span><strong>Privacidade LGPD:</strong> Seu endereço será permanentemente oculto do público. Ele é armazenado com segurança e utilizado exclusivamente pela moderação para confirmar sua elegibilidade na Região Carbonífera, protegendo a comunidade contra perfis falsos.</span>
+                            </div>
+                        {% endif %}
                         {% if field.errors %}
                             <div style="color: red; font-size: 0.75rem; margin-top: 0.25rem;">{{ field.errors.0 }}</div>
                         {% endif %}
