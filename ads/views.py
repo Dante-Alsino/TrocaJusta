@@ -1,28 +1,23 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from core.models import Anuncio, Categoria
+from django.contrib import messages
+from core.models import Categoria
+from . import services
 
 def ad_list(request):
-    # Lista todos os anúncios ativos
-    anuncios = Anuncio.objects.filter(status_publicacao=Anuncio.StatusAnuncio.ATIVO).order_by('-data_postagem')
+    """View Magra: Roteia o request para buscar todos os anúncios ativos."""
+    anuncios = services.get_anuncios_ativos()
     return render(request, 'ads/ad_list.html', {'anuncios': anuncios})
 
 def ad_detail(request, pk):
-    # Detalha um anúncio específico
-    anuncio = get_object_or_404(Anuncio, pk=pk)
-    ja_denunciou = False
-    if request.user.is_authenticated:
-        from core.models import Denuncia
-        ja_denunciou = Denuncia.objects.filter(anuncio=anuncio, perfil_autor=request.user).exists()
+    """View Magra: Busca o detalhe e o status de denúncia do usuário."""
+    anuncio = services.get_anuncio_por_id(pk)
+    ja_denunciou = services.verificar_denuncia_existente(anuncio, request.user)
     return render(request, 'ads/ad_detail.html', {'anuncio': anuncio, 'ja_denunciou': ja_denunciou})
 
 @login_required
 def ad_create(request):
-    if request.user.status_conta != 'ativo':
-        from django.contrib import messages
-        messages.warning(request, 'Sua conta precisa ser verificada pelo Administrador para que você possa publicar anúncios.')
-        return redirect('ads:my_ads')
-        
+    """View Magra: Coleta dados do formulário e tenta salvar através da Camada de Serviços."""
     if request.method == 'POST':
         titulo = request.POST.get('titulo_produto')
         categoria_id = request.POST.get('categoria')
@@ -30,60 +25,54 @@ def ad_create(request):
         descricao = request.POST.get('descricao_detalhada')
         imagem = request.FILES.get('imagem')
         
-        from core.models import ImagemAnuncio
-        
-        # Salva o Anúncio vinculando ao usuário logado
-        anuncio = Anuncio.objects.create(
-            perfil=request.user,
-            categoria_id=categoria_id,
-            titulo_produto=titulo,
-            descricao_detalhada=descricao,
-            preco_solicitado=preco,
-            status_publicacao=Anuncio.StatusAnuncio.ATIVO
-        )
-        
-        # Salva a imagem, se foi enviada
-        if imagem:
-            ImagemAnuncio.objects.create(anuncio=anuncio, imagem=imagem)
-            
-        return redirect('ads:list')
+        try:
+            services.create_anuncio(
+                usuario=request.user, 
+                titulo=titulo, 
+                categoria_id=categoria_id, 
+                preco=preco, 
+                descricao=descricao, 
+                imagem=imagem
+            )
+            return redirect('ads:list')
+        except services.AccountNotVerifiedError as e:
+            messages.warning(request, str(e))
+            return redirect('ads:my_ads')
         
     categorias = Categoria.objects.all()
     return render(request, 'ads/ad_create.html', {'categorias': categorias})
 
 @login_required
 def my_ads(request):
-    # Lista os anúncios criados pelo usuário logado
-    anuncios = Anuncio.objects.filter(perfil=request.user).order_by('-data_postagem')
+    """View Magra: Busca anúncios restritos ao dono logado."""
+    anuncios = services.get_anuncios_do_usuario(request.user)
     return render(request, 'ads/my_ads.html', {'anuncios': anuncios})
 
 @login_required
 def ad_delete(request, pk):
-    # Permite a exclusão de um anúncio apenas pelo dono
-    anuncio = get_object_or_404(Anuncio, pk=pk, perfil=request.user)
+    """View Magra: Delega o comando POST de exclusão para o serviço."""
     if request.method == 'POST':
-        anuncio.delete()
+        services.delete_anuncio(pk, request.user)
     return redirect('ads:my_ads')
 
 @login_required
 def ad_report(request, pk):
-    anuncio = get_object_or_404(Anuncio, pk=pk)
+    """View Magra: Tenta registrar a denúncia via serviço e reage em caso de exceção (Spam)."""
+    anuncio = services.get_anuncio_por_id(pk)
+    
     if request.method == 'POST':
         motivo = request.POST.get('motivo_categoria')
         detalhes = request.POST.get('detalhes_denuncia')
         
-        from core.models import Denuncia
-        from django.contrib import messages
-        
-        if not Denuncia.objects.filter(anuncio=anuncio, perfil_autor=request.user).exists():
-            Denuncia.objects.create(
-                anuncio=anuncio,
-                perfil_autor=request.user,
-                motivo_categoria=motivo,
-                detalhes_denuncia=detalhes
+        try:
+            services.registrar_denuncia(
+                anuncio=anuncio, 
+                usuario=request.user, 
+                motivo=motivo, 
+                detalhes=detalhes
             )
             messages.success(request, 'Sua denúncia foi registrada e será analisada com prioridade pela nossa equipe.')
-        else:
-            messages.info(request, 'Você já denunciou este anúncio anteriormente.')
+        except services.DuplicateReportError as e:
+            messages.info(request, str(e))
             
     return redirect('ads:detail', pk=pk)
