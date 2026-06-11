@@ -1,0 +1,1 @@
+# Inicializa o app core

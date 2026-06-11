@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - Troca Justa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="auth-body">
+    <div class="auth-container">
+        <!-- Coluna Esquerda -->
+        <div class="auth-left">
+            <div class="auth-logo">
+                <span class="logo-text">Troca Justa</span>
+            </div>
+            <div class="auth-left-content">
+                <h1 class="auth-title">Crie sua Conta na<br>Comunidade.</h1>
+                <p class="auth-description">Comece a anunciar seus itens e serviços na principal plataforma de escambo de Charqueadas e região.</p>
+            </div>
+            <div class="auth-footer">
+                &copy; 2024 Troca Justa Charqueadas.
+            </div>
+        </div>
+        
+        <!-- Coluna Direita -->
+        <div class="auth-right">
+            <div class="auth-form-wrapper">
+                <h2 class="auth-heading">Cadastre-se</h2>
+                <p class="auth-subheading">Preencha os dados abaixo para começar.</p>
+                
+                <form method="post" action="{% url 'register' %}" class="auth-form">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                        <div class="auth-error" style="color: red; margin-bottom: 1rem; font-size: 0.875rem;">
+                            Por favor, corrija os erros abaixo.
+                        </div>
+                    {% endif %}
+
+                    {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.name == 'endereco_completo' %}
+                            <div style="background-color: #FEF2F2; color: #991B1B; padding: 0.75rem; border-radius: 6px; border-left: 3px solid #EF4444; font-size: 0.75rem; margin-top: 0.5rem; display: flex; gap: 0.5rem; align-items: flex-start;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                <span><strong>Privacidade LGPD:</strong> Seu endereço será permanentemente oculto do público. Ele é armazenado com segurança e utilizado exclusivamente pela moderação para confirmar sua elegibilidade na Região Carbonífera, protegendo a comunidade contra perfis falsos.</span>
+                            </div>
+                        {% endif %}
+                        {% if field.errors %}
+                            <div style="color: red; font-size: 0.75rem; margin-top: 0.25rem;">{{ field.errors.0 }}</div>
+                        {% endif %}
+                        {% if field.help_text %}
+                            <div style="color: var(--color-text-muted); font-size: 0.75rem; margin-top: 0.25rem;">{{ field.help_text }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    
+                    <button type="submit" class="btn-primary btn-block">Criar Conta</button>
+                </form>
+                
+                <div class="auth-bottom">
+                    Já tem uma conta? <a href="{% url 'login' %}">Entrar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ anuncio.titulo_produto }} - Troca Justa{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <div class="detail-main">
+        {% if anuncio.imagens.first %}
+            <img src="{{ anuncio.imagens.first.imagem.url }}" alt="{{ anuncio.titulo_produto }}" class="detail-image-box">
+        {% else %}
+            <div class="detail-image-box" style="display: flex; align-items: center; justify-content: center; color: var(--color-text-muted);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+            </div>
+        {% endif %}
+        
+        <h1 class="hero-title" style="text-align: left; margin-bottom: 0.5rem;">{{ anuncio.titulo_produto }}</h1>
+        <div class="ad-price" style="font-size: 2rem;">
+            {% if anuncio.preco_solicitado > 0 %}
+                R$ {{ anuncio.preco_solicitado }}
+            {% else %}
+                Aberto a Trocas
+            {% endif %}
+        </div>
+        
+        <div style="margin-top: 2rem;">
+            <h3>Descrição</h3>
+            <p style="margin-top: 1rem; white-space: pre-line; color: var(--color-text-body); line-height: 1.8;">{{ anuncio.descricao_detalhada }}</p>
+        </div>
+    </div>
+    
+    <div class="detail-sidebar">
+        <div class="seller-card">
+            <div style="margin-bottom: 1.5rem;">
+                <span style="font-size: 0.875rem; color: var(--color-text-muted);">Vendedor</span>
+                <h3 class="seller-name">{{ anuncio.perfil.nome_completo|default:anuncio.perfil.username }}</h3>
+                <div style="font-size: 0.875rem; color: var(--color-text-muted); margin-top: 0.25rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                    {{ anuncio.perfil.get_cidade_display }}, RS
+                </div>
+                
+                {% if anuncio.perfil.status_conta == 'ativo' %}
+                <div class="verified-badge" style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.25rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> 
+                    Identidade Verificada
+                </div>
+                {% else %}
+                <div style="color: #D97706; margin-top: 0.5rem; font-size: 0.875rem; font-weight: 500; display: flex; align-items: center; gap: 0.25rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    Perfil não verificado
+                </div>
+                {% endif %}
+            </div>
+            
+            <button class="btn-primary btn-block" style="margin-bottom: 1rem;">Entrar em Contato</button>
+            
+            {% if request.user.is_authenticated and request.user != anuncio.perfil %}
+                {% if ja_denunciou %}
+                    <button class="btn-social btn-block" disabled style="color: #6B7280; border-color: #D1D5DB; background: #F3F4F6; cursor: not-allowed; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        Denúncia Recebida
+                    </button>
+                {% else %}
+                    <button type="button" onclick="openReportModal()" class="btn-social btn-block" style="color: #DC2626; border-color: #FECACA; background: #FEF2F2; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.2s;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                        Denunciar Anúncio
+                    </button>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Denúncia -->
+<div id="reportModal" class="modal-overlay">
+    <div class="modal-box" style="text-align: left;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h3 class="modal-title" style="margin-bottom: 0;">Denunciar Anúncio</h3>
+            <button type="button" onclick="closeReportModal()" style="background: none; border: none; cursor: pointer; color: var(--color-text-muted);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+        
+        <p class="modal-text" style="text-align: left; margin-bottom: 1.5rem;">Por favor, nos conte o que há de errado com o anúncio "<strong>{{ anuncio.titulo_produto }}</strong>". Nossa equipe de moderação irá analisar.</p>
+        
+        <form method="post" action="{% url 'ads:report' anuncio.pk %}">
+            {% csrf_token %}
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label class="form-label" style="display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.875rem;">Motivo da Denúncia</label>
+                <select name="motivo_categoria" class="form-input" required style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--color-border); background-color: var(--color-bg-light);">
+                    <option value="" disabled selected>Selecione um motivo...</option>
+                    <option value="fraude">Suspeita de Fraude ou Golpe</option>
+                    <option value="falso">Item Falsificado</option>
+                    <option value="ofensivo">Conteúdo Ofensivo / Impróprio</option>
+                    <option value="spam">Spam / Anúncio Duplicado</option>
+                    <option value="outro">Outro Motivo</option>
+                </select>
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label class="form-label" style="display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.875rem;">Detalhes Adicionais</label>
+                <textarea name="detalhes_denuncia" class="form-input" rows="4" required placeholder="Descreva brevemente por que você está denunciando este anúncio..." style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--color-border); background-color: var(--color-bg-light); resize: vertical; font-family: inherit;"></textarea>
+            </div>
+            
+            <div class="modal-actions" style="margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 1rem;">
+                <button type="button" class="btn-text" onclick="closeReportModal()">Cancelar</button>
+                <button type="submit" class="btn-primary" style="background-color: #EF4444;">Enviar Denúncia</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openReportModal() {
+        document.getElementById('reportModal').classList.add('active');
+    }
+
+    function closeReportModal() {
+        document.getElementById('reportModal').classList.remove('active');
+    }
+</script>
+{% endblock %}

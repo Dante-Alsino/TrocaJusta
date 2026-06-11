@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Criar Anúncio - Troca Justa{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2 class="auth-heading" style="margin-bottom: 2rem;">Publicar novo anúncio</h2>
+    
+    <form method="post" action="{% url 'ads:create' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label>Título do Produto/Serviço</label>
+            <input type="text" name="titulo_produto" class="form-control" required placeholder="Ex: Bicicleta Caloi Aro 29">
+        </div>
+        
+        <div class="form-group">
+            <label>Categoria</label>
+            <select name="categoria" class="form-control" required style="appearance: auto;">
+                <option value="">Selecione uma categoria...</option>
+                {% for cat in categorias %}
+                <option value="{{ cat.id }}">{{ cat.nome_categoria }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Preço ou Valor Estimado para Troca (R$)</label>
+            <input type="number" name="preco_solicitado" step="0.01" class="form-control" required placeholder="0.00 se for apenas troca">
+        </div>
+        
+        <div class="form-group">
+            <label>Descrição Detalhada</label>
+            <textarea name="descricao_detalhada" class="form-control" required rows="5" placeholder="Descreva o estado de conservação, tempo de uso, ou o que você deseja em troca..."></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label>Imagens</label>
+            <input type="file" name="imagem" accept="image/*" class="form-control">
+        </div>
+        
+        <div style="margin-top: 2rem;">
+            <button type="submit" class="btn-primary btn-block">Publicar Anúncio</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
