@@ -5,15 +5,34 @@ from core.models import Categoria
 from . import services
 
 def ad_list(request):
-    """View Magra: Roteia o request para buscar todos os anúncios ativos."""
-    anuncios = services.get_anuncios_ativos()
-    return render(request, 'ads/ad_list.html', {'anuncios': anuncios})
+    """View Magra: Roteia o request para buscar todos os anúncios ativos, aplicando filtros de busca."""
+    query = request.GET.get('q')
+    categoria_id = request.GET.get('categoria')
+    
+    anuncios = services.get_anuncios_ativos(query=query, categoria_id=categoria_id)
+    categorias = Categoria.objects.all()
+    
+    return render(request, 'ads/ad_list.html', {
+        'anuncios': anuncios,
+        'categorias': categorias,
+        'query': query,
+        'categoria_id': categoria_id
+    })
 
 def ad_detail(request, pk):
-    """View Magra: Busca o detalhe e o status de denúncia do usuário."""
+    """View Magra: Busca o detalhe, status de denúncia e gera o link do WhatsApp."""
     anuncio = services.get_anuncio_por_id(pk)
     ja_denunciou = services.verificar_denuncia_existente(anuncio, request.user)
-    return render(request, 'ads/ad_detail.html', {'anuncio': anuncio, 'ja_denunciou': ja_denunciou})
+    
+    whatsapp_link = ""
+    if anuncio.perfil.telefone_contato:
+        whatsapp_link = services.gerar_link_whatsapp(anuncio.perfil.telefone_contato, anuncio.titulo_produto)
+        
+    return render(request, 'ads/ad_detail.html', {
+        'anuncio': anuncio, 
+        'ja_denunciou': ja_denunciou,
+        'whatsapp_link': whatsapp_link
+    })
 
 @login_required
 def ad_create(request):

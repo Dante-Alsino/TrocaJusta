@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 from core.models import Anuncio, ImagemAnuncio, Denuncia
 
 class AccountNotVerifiedError(Exception):
@@ -9,9 +10,37 @@ class DuplicateReportError(Exception):
     """Exceção levantada quando um usuário tenta denunciar um anúncio mais de uma vez."""
     pass
 
-def get_anuncios_ativos():
-    """Retorna o queryset de anúncios ativos para exibição no catálogo público."""
-    return Anuncio.objects.filter(status_publicacao=Anuncio.StatusAnuncio.ATIVO).order_by('-data_postagem')
+def get_anuncios_ativos(query=None, categoria_id=None):
+    """Retorna o queryset de anúncios ativos para exibição no catálogo público, com suporte a filtros."""
+    anuncios = Anuncio.objects.filter(status_publicacao=Anuncio.StatusAnuncio.ATIVO).order_by('-data_postagem')
+    
+    if query:
+        anuncios = anuncios.filter(
+            Q(titulo_produto__icontains=query) | Q(descricao_detalhada__icontains=query)
+        )
+        
+    if categoria_id:
+        anuncios = anuncios.filter(categoria_id=categoria_id)
+        
+    return anuncios
+
+def gerar_link_whatsapp(telefone, titulo_anuncio):
+    """Higieniza o telefone e gera o link da API do WhatsApp com mensagem pré-preenchida."""
+    import re
+    from urllib.parse import quote
+    
+    if not telefone:
+        return ""
+        
+    telefone_limpo = re.sub(r'\D', '', str(telefone))
+    
+    if len(telefone_limpo) in (10, 11) and not telefone_limpo.startswith('55'):
+        telefone_limpo = '55' + telefone_limpo
+        
+    mensagem = f"Olá! Vi seu anúncio '{titulo_anuncio}' no Troca Justa. Ainda está disponível?"
+    mensagem_codificada = quote(mensagem)
+    
+    return f"https://wa.me/{telefone_limpo}?text={mensagem_codificada}"
 
 def get_anuncios_do_usuario(usuario):
     """Retorna os anúncios pertencentes a um usuário logado específico."""
