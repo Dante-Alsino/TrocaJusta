@@ -16,7 +16,7 @@ def usuario_pendente(db):
 
 @pytest.fixture
 def categoria(db):
-    return Categoria.objects.create(nome_categoria="Teste", icone_svg="<svg></svg>")
+    return Categoria.objects.create(nome_categoria="Teste", slug_busca="teste")
 
 @pytest.mark.django_db
 def test_ad_create_view_redireciona_inativo(client, usuario_pendente, categoria):
@@ -45,3 +45,26 @@ def test_ad_list_view_status(client):
     
     assert response.status_code == 200
     assert 'ads/ad_list.html' in [t.name for t in response.templates]
+
+@pytest.mark.django_db
+def test_my_ads_view_status(client, usuario_pendente):
+    client.force_login(usuario_pendente)
+    url = reverse('ads:my_ads')
+    response = client.get(url)
+    assert response.status_code == 200
+    assert 'ads/my_ads.html' in [t.name for t in response.templates]
+
+@pytest.mark.django_db
+def test_ad_delete_view(client, usuario_pendente, categoria):
+    client.force_login(usuario_pendente)
+    # Cria um anúncio manual via model direto para não estourar a regra de inativo no service
+    anuncio = Anuncio.objects.create(
+        perfil=usuario_pendente, categoria=categoria, titulo_produto="Teste Excluir", 
+        descricao_detalhada="...", preco_solicitado=10, status_publicacao="ativo"
+    )
+    url = reverse('ads:delete', kwargs={'pk': anuncio.id})
+    response = client.post(url)
+    
+    assert response.status_code == 302
+    assert response.url == reverse('ads:my_ads')
+    assert not Anuncio.objects.filter(id=anuncio.id).exists()

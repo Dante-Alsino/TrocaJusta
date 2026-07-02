@@ -1,12 +1,14 @@
 import pytest
 from core.models import Anuncio, CustomUser, Categoria, Denuncia
+from django.http import Http404
 from ads.services import (
-    create_anuncio, registrar_denuncia, AccountNotVerifiedError, DuplicateReportError
+    create_anuncio, registrar_denuncia, AccountNotVerifiedError, DuplicateReportError,
+    get_anuncios_ativos, gerar_link_whatsapp, delete_anuncio
 )
 
 @pytest.fixture
 def categoria(db):
-    return Categoria.objects.create(nome_categoria="Teste", icone_svg="<svg></svg>")
+    return Categoria.objects.create(nome_categoria="Teste", slug_busca="teste")
 
 @pytest.fixture
 def usuario_ativo(db):
@@ -45,3 +47,42 @@ def test_create_anuncio_sucesso(usuario_ativo, categoria):
     anuncio = create_anuncio(usuario_ativo, "Anúncio Sucesso", categoria.id, 50.0, "Desc")
     assert Anuncio.objects.filter(id=anuncio.id).exists()
     assert anuncio.status_publicacao == Anuncio.StatusAnuncio.ATIVO
+
+@pytest.mark.django_db
+def test_get_anuncios_ativos_filtro_busca(usuario_ativo, categoria):
+    anuncio1 = create_anuncio(usuario_ativo, "Bicicleta Caloi", categoria.id, 100.0, "Ótima bike")
+    anuncio2 = create_anuncio(usuario_ativo, "Skate", categoria.id, 50.0, "Shape maple")
+    
+    resultados = get_anuncios_ativos(query="caloi")
+    assert resultados.count() == 1
+    assert resultados.first() == anuncio1
+
+@pytest.mark.django_db
+def test_get_anuncios_ativos_filtro_categoria(usuario_ativo, categoria, db):
+    cat2 = Categoria.objects.create(nome_categoria="Outra", slug_busca="outra")
+    anuncio1 = create_anuncio(usuario_ativo, "Anúncio A", categoria.id, 10.0, "A")
+    anuncio2 = create_anuncio(usuario_ativo, "Anúncio B", cat2.id, 10.0, "B")
+    
+    resultados = get_anuncios_ativos(categoria_id=cat2.id)
+    assert resultados.count() == 1
+    assert resultados.first() == anuncio2
+
+def test_gerar_link_whatsapp():
+    telefone = "(51) 98888-7777"
+    titulo = "Bicicleta Caloi"
+    link = gerar_link_whatsapp(telefone, titulo)
+    
+    assert link.startswith("https://wa.me/5551988887777")
+    assert "text=Ol%C3%A1%21%20Vi%20seu%20an%C3%BAncio%20%27Bicicleta%20Caloi%27" in link
+
+@pytest.mark.django_db
+def test_delete_anuncio_sucesso(usuario_ativo, anuncio):
+    anuncio_id = anuncio.id
+    delete_anuncio(anuncio_id, usuario_ativo)
+    assert not Anuncio.objects.filter(id=anuncio_id).exists()
+
+@pytest.mark.django_db
+def test_delete_anuncio_falha_usuario_errado(usuario_ativo, usuario_pendente, anuncio):
+    with pytest.raises(Http404):
+        # Usuário pendente tenta deletar o anúncio do usuário ativo, o que deve levantar 404 Not Found
+        delete_anuncio(anuncio.id, usuario_pendente)
