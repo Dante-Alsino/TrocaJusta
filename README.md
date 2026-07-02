@@ -35,6 +35,13 @@ Após seguir os passos acima, acesse o projeto através dos links abaixo:
 * 💻 **Interface do Sistema:** [http://localhost:8000](http://localhost:8000)
 * ⚙️ **Painel do Administrador:** [http://localhost:8000/admin](http://localhost:8000/admin)
 
+### 5. Executando os Testes Automatizados (Pytest)
+A plataforma possui uma suíte completa de testes de regras de negócio. Para rodar os testes, garanta que os containers estão rodando e execute o comando abaixo em uma nova aba do terminal:
+```bash
+docker compose exec web pytest -v
+```
+*(Nota: Se houver problemas de módulos ausentes, rode `docker compose up --build -d` para garantir que o pytest foi instalado dentro do container).*
+
 ---
 
 ## 🛠️ Comandos Úteis (Docker)
