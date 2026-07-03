@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import MagicMock, patch
 from accounts.services import efetuar_registro_usuario
 
+# Verifica se a função 'login' do Django é acionada assim que um novo perfil é registrado no serviço
 def test_efetuar_registro_usuario():
     """Garante que ao registrar o usuário, a função login seja invocada automaticamente."""
     mock_form = MagicMock()
