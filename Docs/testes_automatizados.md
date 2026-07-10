@@ -35,13 +35,25 @@ O ambiente Django roda dentro de um container Docker isolado. Sendo assim, o Pyt
    ```bash
    docker-compose up -d
    ```
-2. Para rodar a malha de testes padrão e obter uma visualização rápida do progresso (pontinhos verdes):
+2. Para rodar a malha completa de testes e obter uma visualização rápida do progresso:
    ```bash
-   docker-compose exec web pytest
+   docker compose exec web pytest
    ```
-3. (Opcional) Para rodar o teste com log aprofundado (listando minuciosamente o nome de cada teste aprovado):
+3. Para rodar a suíte com logs detalhados (listando o nome descritivo de cada função testada):
    ```bash
-   docker-compose exec web pytest -v
+   docker compose exec web pytest -v
    ```
+4. **Execução Isolada por Categoria (Markers):**
+   Graças às marcações exclusivas no código fonte e no arquivo `pytest.ini`, é possível rodar camadas da arquitetura de forma isolada.
+   
+   - Para testar **apenas as regras de negócio** (Testes Unitários da camada Service):
+     ```bash
+     docker compose exec web pytest -m unit -v
+     ```
+   
+   - Para testar **apenas os fluxos de navegação e rotas HTTP** (Testes Funcionais da camada View):
+     ```bash
+     docker compose exec web pytest -m functional -v
+     ```
 
-A execução irá ignorar o banco de dados principal de produção, criar um banco de testes temporário "vazio", popular dados com os Fixtures, executar os 15 cenários de stress, aprovar e destruir o banco em aproximadamente 3 a 5 segundos.
+Durante qualquer uma dessas execuções, o framework ignorará o banco de dados principal de produção, criará um banco de testes temporário "vazio", populará dados com Fixtures em memória, executará a bateria de stress, avaliará os resultados e destruirá o banco em menos de 5 segundos.
