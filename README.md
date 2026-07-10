@@ -1,4 +1,4 @@
-# 🛒 Troca Justa Charqueadas
+# Troca Justa Charqueadas
 
 ## Arquitetura do Sistema
 
@@ -59,7 +59,7 @@ Este diagrama ilustra o **Ciclo de Vida de uma Requisição** e como a inteligê
 3. **A Separação de Testes:** As setas pontilhadas revelam a estratégia do Pytest. O `-m functional` atua como um boneco de testes batendo direto nas Views (testando o ciclo web). O `-m unit` ataca apenas as peças isoladas do Service (testando a matemática/lógica por trás).
 
 
-## 🚀 Como Rodar o Projeto
+##  Como Rodar o Projeto
 
 Certifique-se de que o **Docker Desktop** esteja aberto e em execução.
 
@@ -114,7 +114,7 @@ docker compose exec web pytest -v
 
 ---
 
-## 🛠️ Comandos Úteis (Docker)
+## Comandos Úteis (Docker)
 
 * **Parar os containers:**  
   ```bash
