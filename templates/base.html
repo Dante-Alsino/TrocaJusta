@@ -10,6 +10,7 @@
 </head>
 <body>
     <div class="app-container">
+        <div class="sidebar-overlay"></div>
         <!-- Sidebar Esquerda -->
         <aside class="sidebar">
             <div class="sidebar-logo">
@@ -72,7 +73,8 @@
         <main class="main-content">
             <!-- Barra Superior (Topbar) -->
             <div class="topbar">
-                <div style="display: flex; gap: 2rem; color: var(--color-text-muted); font-size: 0.875rem;">
+                <div style="display: flex; gap: 1rem; align-items: center; color: var(--color-text-muted); font-size: 0.875rem;">
+                    <button class="hamburger-menu" aria-label="Abrir menu">☰</button>
                 </div>
                 <div class="topbar-actions" style="display: flex; gap: 1.5rem; align-items: center;">
                     <a href="#" style="color: var(--color-text-muted); display: flex; align-items: center;">
@@ -85,7 +87,7 @@
             </div>
 
             <!-- Injeção de Páginas -->
-            <div style="padding: 3rem;">
+            <div class="main-content-inner">
                 {% if messages %}
                     {% for message in messages %}
                         <div style="padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-weight: 500; {% if message.tags == 'success' %}background-color: #D1FAE5; color: #065F46; border-left: 4px solid #10B981;{% elif message.tags == 'info' %}background-color: #DBEAFE; color: #1E40AF; border-left: 4px solid #3B82F6;{% elif message.tags == 'error' or message.tags == 'warning' %}background-color: #FEF2F2; color: #991B1B; border-left: 4px solid #EF4444;{% else %}background-color: #FEF3C7; color: #92400E; border-left: 4px solid #F59E0B;{% endif %}">
@@ -99,5 +101,21 @@
             </div>
         </main>
     </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.querySelector('.hamburger-menu');
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+
+            function toggleSidebar() {
+                if (sidebar) sidebar.classList.toggle('sidebar-active');
+                if (overlay) overlay.classList.toggle('active');
+            }
+
+            if (hamburger) hamburger.addEventListener('click', toggleSidebar);
+            if (overlay) overlay.addEventListener('click', toggleSidebar);
+        });
+    </script>
 </body>
 </html>

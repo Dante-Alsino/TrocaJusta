@@ -4,7 +4,7 @@
 {% block title %}Pesquisar - Troca Justa{% endblock %}
 
 {% block content %}
-<form method="GET" action="{% url 'ads:list' %}" style="margin-bottom: 3rem; display: flex; gap: 1rem; position: relative;">
+<form method="GET" action="{% url 'ads:list' %}" class="search-form-mobile" style="margin-bottom: 3rem; display: flex; gap: 1rem; position: relative;">
     <div style="flex-grow: 1; position: relative;">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--color-text-muted);"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         <input type="text" name="q" value="{{ query|default:'' }}" class="search-input" placeholder="Pesquisar itens, serviços ou usuários..." style="font-size: 1.125rem; padding: 1rem 1.5rem 1rem 3rem; border-radius: 8px; border: 1px solid var(--color-border); background: white; width: 100%; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
