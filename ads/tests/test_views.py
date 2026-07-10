@@ -19,6 +19,7 @@ def categoria(db):
     return Categoria.objects.create(nome_categoria="Teste", slug_busca="teste")
 
 # Testa se a tentativa de criar um anúncio por inativos redireciona corretamente enviando a Flash Message de aviso
+@pytest.mark.functional
 @pytest.mark.django_db
 def test_ad_create_view_redireciona_inativo(client, usuario_pendente, categoria):
     client.force_login(usuario_pendente)
@@ -40,6 +41,7 @@ def test_ad_create_view_redireciona_inativo(client, usuario_pendente, categoria)
     assert "Sua conta precisa ser verificada" in str(messages[0])
 
 # Valida se a vitrine principal (Catálogo Público) renderiza o template correto em HTTP 200
+@pytest.mark.functional
 @pytest.mark.django_db
 def test_ad_list_view_status(client):
     url = reverse('ads:list')
@@ -49,6 +51,7 @@ def test_ad_list_view_status(client):
     assert 'ads/ad_list.html' in [t.name for t in response.templates]
 
 # Garante que o painel de gerenciamento (Meus Anúncios) seja renderizado com status de sucesso (200)
+@pytest.mark.functional
 @pytest.mark.django_db
 def test_my_ads_view_status(client, usuario_pendente):
     client.force_login(usuario_pendente)
@@ -58,6 +61,7 @@ def test_my_ads_view_status(client, usuario_pendente):
     assert 'ads/my_ads.html' in [t.name for t in response.templates]
 
 # Avalia a rota de deleção via POST, checando se destrói a Model e redireciona de volta ao painel
+@pytest.mark.functional
 @pytest.mark.django_db
 def test_ad_delete_view(client, usuario_pendente, categoria):
     client.force_login(usuario_pendente)

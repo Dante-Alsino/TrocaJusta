@@ -36,7 +36,19 @@ Após seguir os passos acima, acesse o projeto através dos links abaixo:
 * ⚙️ **Painel do Administrador:** [http://localhost:8000/admin](http://localhost:8000/admin)
 
 ### 5. Executando os Testes Automatizados (Pytest)
-A plataforma possui uma suíte completa de testes de regras de negócio. Para rodar os testes, garanta que os containers estão rodando e execute o comando abaixo em uma nova aba do terminal:
+A plataforma possui uma suíte de testes com separação arquitetural (Unitários vs Funcionais). Garanta que os containers estão rodando e execute os comandos abaixo em uma nova aba do terminal:
+
+**Testes Unitários (Apenas lógica e regras de negócio):**
+```bash
+docker compose exec web pytest -m unit -v
+```
+
+**Testes Funcionais (Simulação de fluxos de navegação e telas):**
+```bash
+docker compose exec web pytest -m functional -v
+```
+
+**Rodar todos os testes (Suíte Completa):**
 ```bash
 docker compose exec web pytest -v
 ```

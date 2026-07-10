@@ -10,6 +10,7 @@ def client():
     return Client()
 
 # Testa a disponibilidade do endpoint de registro, garantindo que o status HTTP seja 200 (Sucesso)
+@pytest.mark.functional
 @pytest.mark.django_db
 def test_register_view_get(client):
     """Testa se a página de registro carrega corretamente."""
@@ -19,6 +20,7 @@ def test_register_view_get(client):
     assert 'accounts/register.html' in [t.name for t in response.templates]
 
 # Garante a proteção de rota: impede acesso de anônimos ao perfil, forçando redirecionamento (302)
+@pytest.mark.functional
 @pytest.mark.django_db
 def test_profile_view_bloqueado(client):
     """Garante que a página de perfil é restrita a usuários logados (@login_required)."""
